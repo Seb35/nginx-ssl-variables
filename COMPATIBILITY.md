@@ -78,12 +78,13 @@ These variables cannot be accessed until an update of the SSL nginx module. A ac
 * nginx variable: $ssl_session_id
 * nginx values: same as Apache but in lowercase
 * nginx Lua:
-
-    set_by_lua $ssl_session_id_compat '
-            if ngx.var.https == "on" then
-                return string.upper(ngx.var.ssl_session_id)
-            end
-            return nil';
+```lua
+set_by_lua $ssl_session_id_compat '
+        if ngx.var.https == "on" then
+            return string.upper(ngx.var.ssl_session_id)
+        end
+        return nil';
+```
 
 
 ### SSL_SESSION_RESUMED
@@ -92,14 +93,15 @@ These variables cannot be accessed until an update of the SSL nginx module. A ac
 * nginx variable: $ssl_session_reused introduced in nginx 1.5.11
 * nginx values: "r" or "."
 * nginx Lua:
-
-    set_by_lua $ssl_session_resumed_compat '
-            if ngx.var.ssl_session_reused == "." then
-                return "Initial"
-            elseif ngx.var.ssl_session_reused == "r" then
-                return "Resumed"
-            end
-            return nil';
+```lua
+set_by_lua $ssl_session_resumed_compat '
+        if ngx.var.ssl_session_reused == "." then
+            return "Initial"
+        elseif ngx.var.ssl_session_reused == "r" then
+            return "Resumed"
+        end
+        return nil';
+```
 
 
 ### SSL_SECURE_RENEG
@@ -123,16 +125,17 @@ These variables cannot be accessed until an update of the SSL nginx module. A ac
 * nginx variable: none
 * nginx values: none
 * nginx Lua:
-
-    set_by_lua $ssl_cipher_export_compat '
-            if ngx.var.https == "on" then
-                if ngx.var.ssl_cipher_usekeysize < 56 then
-                    return "true"
-                else
-                    return "false"
-                end
+```lua
+set_by_lua $ssl_cipher_export_compat '
+        if ngx.var.https == "on" then
+            if ngx.var.ssl_cipher_usekeysize < 56 then
+                return "true"
+            else
+                return "false"
             end
-            return nil';
+        end
+        return nil';
+```
 
 
 ### SSL_CIPHER_USEKEYSIZE
@@ -173,13 +176,14 @@ These variables cannot be accessed until an update of the SSL nginx module. A ac
 * nginx variable: none
 * nginx values: none
 * nginx Lua:
-
-    set_by_lua $ssl_version_library_compat '
-            if ngx.var.https == "on" then
-                lua_openssl_version, lua_version, openssl_version = require("openssl").version()
-                return openssl_version
-            end
-            return nil';
+```lua
+set_by_lua $ssl_version_library_compat '
+        if ngx.var.https == "on" then
+            lua_openssl_version, lua_version, openssl_version = require("openssl").version()
+            return openssl_version
+        end
+        return nil';
+```
 
 
 ### SSL_CLIENT_M_VERSION
@@ -188,12 +192,13 @@ These variables cannot be accessed until an update of the SSL nginx module. A ac
 * nginx variable: none
 * nginx values: none
 * nginx Lua:
-
-    set_by_lua $ssl_client_m_version_compat '
-            if ngx.var.https == "on" then
-                return require("openssl").x509.read(ngx.var.ssl_client_raw_cert):version()+1
-            end
-            return nil';
+```lua
+set_by_lua $ssl_client_m_version_compat '
+        if ngx.var.https == "on" then
+            return require("openssl").x509.read(ngx.var.ssl_client_raw_cert):version()+1
+        end
+        return nil';
+```
 
 
 ### SSL_CLIENT_M_SERIAL
