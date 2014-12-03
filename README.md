@@ -8,11 +8,11 @@ All available SSL variables are given in the [COMPATIBILITY.md](COMPATIBILITY.md
 Installing
 ----------
 
-0. Copy the files `*.conf` in your nginx directory `/etc/nginx` (or another non-standard location).
+1. Copy the files `*.conf` in your nginx directory `/etc/nginx` (or another non-standard location).
 
 __Soft install:__
 
-1. Include the file `*_ssl_variables.conf` in your web server config corresponding to your gateway (fastcgi, scgi, uwsgi). For instance:
+2. Include the file `*_ssl_variables.conf` in your web server config corresponding to your gateway (fastcgi, scgi, uwsgi). For instance:
    ```nginx
    location ~ \.php {
        include fastcgi.conf;
@@ -20,14 +20,14 @@ __Soft install:__
    }
    ```
 
-2. Depending of your nginx version, uncomment lines where a nginx version is indicated. You can also comment some variables you don’t need.
-3. Reload nginx. It’s ready!
+3. Depending of your nginx version, uncomment lines where a nginx version is indicated. You can also comment some variables you don’t need.
+4. Reload nginx. It’s ready!
 
 __Complete install:__
 
-1. Be sure you have installed the [nginx Lua package](http://wiki.nginx.org/HttpLuaModule) (available in the Debian/Ubuntu package nginx-extras).
-2. Install the [Lua-OpenSSL interface written by zhaozg](https://github.com/zhaozg/lua-openssl) and be sure it works in the Lua command line.
-3. Include the file `*_ssl_variables_lua.conf` in your web server config corresponding to your gateway (fastcgi, scgi, uwsgi). For instance:
+2. Be sure you have installed the [nginx Lua package](http://wiki.nginx.org/HttpLuaModule) (available in the Debian/Ubuntu package nginx-extras).
+3. Install the [Lua-OpenSSL interface written by zhaozg](https://github.com/zhaozg/lua-openssl) and be sure it works in the Lua command line.
+4. Include the file `*_ssl_variables_lua.conf` in your web server config corresponding to your gateway (fastcgi, scgi, uwsgi). For instance:
    ```nginx
    location ~ \.php {
        include fastcgi.conf;
@@ -35,8 +35,8 @@ __Complete install:__
    }
    ```
 
-4. Depending of your nginx version, uncomment lines where a nginx version is indicated. You can also comment some variables you don’t need.
-5. Reload nginx. It’s ready!
+5. Depending of your nginx version, uncomment lines where a nginx version is indicated. You can also comment some variables you don’t need.
+6. Reload nginx. It’s ready!
 
 Contributing
 ------------
