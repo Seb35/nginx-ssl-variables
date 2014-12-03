@@ -41,14 +41,13 @@ __Complete install:__
 Contributing
 ------------
 
-Don’t hesit to submit pull requests or open [issues](https://github.com/Seb35/nginx-ssl-variables/issues). When you change files, you only need to change the two files `fastcgi_*.conf`, then use the Bash `script utils/sync_scgi-uwsgi_from_fastcgi.sh` to update the four other files, `scgi_*.conf` and `uwsgi_*.conf`.
+Don’t hesit to submit pull requests or open [issues](https://github.com/Seb35/nginx-ssl-variables/issues). When you change files, you only need to change the two files `fastcgi_*.conf`, then use the Bash script `utils/sync_scgi-uwsgi_from_fastcgi.sh` to update the four other files, `scgi_*.conf` and `uwsgi_*.conf`.
 
 I’m not (yet) part of nginx community, and I don’t know if such a patch could/should be added to nginx, neither know the SSL module development policy and roadmap; if you have some advices about that, you can reach me to discuss.
 
 Licence
 -------
 
-Original author: [Seb35](https://github.com/Seb35)
-
-Licence: [WTFPL 2](http://www.wtfpl.net)
+* Original author: [Seb35](https://github.com/Seb35)
+* Licence: [WTFPL 2](http://www.wtfpl.net)
 
