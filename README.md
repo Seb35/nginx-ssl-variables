@@ -1,30 +1,50 @@
 nginx SSL variables
 ===================
 
-In Apache, standard SSL variables (activated with SSLOptions +StdEnvVars) are used to give access the underlying application details of the current SSL connection. When nginx is used, these variables are not passed to the underlying application (through FastCGI, SCGI, or uWSGI), except the variable HTTPS.
+This creates backward-compatible SSL variables in nginx, compared to Apache mod_ssl module. A few variables are given by nginx, and some others have to be computed through nginx-Lua with a Lua-OpenSSL interface.
 
-The following config files can be added in nginx configuration to keep application working correctly with SSL. nginx has (much) less available SSL variables than Apache and some are a bit different, so you can see the COMPATIBILITY.md file to check the status of each variable. It is tried to fill some missing variables by using Lua in nginx, with the Lua-OpenSSL gateway. Obviously there will be performance issues, so you should see if you really need these supplementary variables for your applications.
+All available SSL variables are given in the [COMPATIBILITY.md](COMPATIBILITY.md) file with its specifications and current implementation status.
 
 Installing
 ----------
 
-You have to copy the file `*.conf` of this directory in your nginx configuration directory (probably `/etc/nginx`). If you want to use enhanced variables provided by Lua, you have to install the Lua package of nginx (package nginx-extras on Debian/Ubuntu), as well as the Lua-OpenSSL gateway available on https://github.com/zhaozg/lua-openssl.
+1. Copy the files `*.conf` in your nginx directory `/etc/nginx` (or another non-standard location).
 
-Depending of your nginx version, you can uncomment some lines where minimal nginx version is indicated in the various `*.conf` files.
-
-Then you have to include this file after the inclusion of the standard fastcgi/scgi/uwsgi parameters, e.g.
+Soft install:
+2. Include the file `*_ssl_variables.conf` in your web server config corresponding to your gateway (fastcgi, scgi, uwsgi). For instance:
+```nginx
+location ~ \.php {
     include fastcgi.conf;
     include fastcgi_ssl_variables.conf;
+}
+```
+3. Depending of your nginx version, uncomment lines where a nginx version is indicated. You can also comment some variables you don’t need.
+4. Reload nginx. It’s ready!
+
+Complete install:
+2. Be sure you have installed the [nginx Lua package](http://wiki.nginx.org/HttpLuaModule) (available in the Debian/Ubuntu package nginx-extras).
+3. Install the [Lua-OpenSSL interface written by zhaozg](https://github.com/zhaozg/lua-openssl) and be sure it works in the Lua command line.
+4. Include the file `*_ssl_variables_lua.conf` in your web server config corresponding to your gateway (fastcgi, scgi, uwsgi). For instance:
+```nginx
+location ~ \.php {
+    include fastcgi.conf;
+    include fastcgi_ssl_variables_lua.conf;
+}
+```
+5. Depending of your nginx version, uncomment lines where a nginx version is indicated. You can also comment some variables you don’t need.
+6. Reload nginx. It’s ready!
 
 Contributing
 ------------
 
-Please submit pull requests if you see some improvements. You can update fastcgi_ssl_variables.conf, then use the Bash script utils/sync_scgi-uwsgi_from_fastcgi.sh to update the two other files, scgi_ssl_variables.conf and uwsgi_ssl_variables.
+Don’t hesit to submit pull requests or open [issues](https://github.com/Seb35/nginx-ssl-variables/issues). When you change files, you only need to change the two files `fastcgi_*.conf`, then use the Bash `script utils/sync_scgi-uwsgi_from_fastcgi.sh` to update the four other files, `scgi_*.conf` and `uwsgi_*.conf`.
 
 I’m not (yet) part of nginx community, and I don’t know if such a patch could/should be added to nginx, neither know the SSL module development policy and roadmap; if you have some advices about that, you can reach me to discuss.
 
-License
+Licence
 -------
 
-WTFPL 2.0
+Original author: [Seb35](https://github.com/Seb35)
+
+Licence: [WTFPL 2](http://www.wtfpl.net)
 

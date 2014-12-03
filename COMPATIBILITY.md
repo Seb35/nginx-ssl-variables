@@ -78,7 +78,7 @@ These variables cannot be accessed until an update of the SSL nginx module. An a
 * nginx variable: $ssl_session_id
 * nginx values: same as Apache but in lowercase
 * nginx Lua:
-```lua
+```nginx
 set_by_lua $ssl_session_id_compat '
         if ngx.var.https == "on" then
             return string.upper(ngx.var.ssl_session_id)
@@ -93,7 +93,7 @@ set_by_lua $ssl_session_id_compat '
 * nginx variable: $ssl_session_reused introduced in nginx 1.5.11
 * nginx values: "r" or "."
 * nginx Lua:
-```lua
+```nginx
 set_by_lua $ssl_session_resumed_compat '
         if ngx.var.ssl_session_reused == "." then
             return "Initial"
@@ -125,7 +125,7 @@ set_by_lua $ssl_session_resumed_compat '
 * nginx variable: none
 * nginx values: none
 * nginx Lua:
-```lua
+```nginx
 set_by_lua $ssl_cipher_export_compat '
         if ngx.var.https == "on" then
             if ngx.var.ssl_cipher_usekeysize < 56 then
@@ -176,7 +176,7 @@ set_by_lua $ssl_cipher_export_compat '
 * nginx variable: none
 * nginx values: none
 * nginx Lua:
-```lua
+```nginx
 set_by_lua $ssl_version_library_compat '
         if ngx.var.https == "on" then
             lua_openssl_version, lua_version, openssl_version = require("openssl").version()
@@ -192,7 +192,7 @@ set_by_lua $ssl_version_library_compat '
 * nginx variable: none
 * nginx values: none
 * nginx Lua:
-```lua
+```nginx
 set_by_lua $ssl_client_m_version_compat '
         if ngx.var.https == "on" then
             return require("openssl").x509.read(ngx.var.ssl_client_raw_cert):version()+1
@@ -244,7 +244,7 @@ set_by_lua $ssl_client_m_version_compat '
 * nginx variable: none
 * nginx values: none
 * nginx Lua:
-```lua
+```nginx
 set_by_lua $ssl_client_v_start_compat '
         if ngx.var.https == "on" then
             return require("openssl").x509.read(ngx.var.ssl_client_raw_cert):notbefore()
@@ -258,8 +258,8 @@ set_by_lua $ssl_client_v_start_compat '
 * Apache values: string, date with format "%s %2d %02d:%02d:%02d %d%s" (3-letter month like "Jan", day of month, hour, minute, second, 4-figure year, " GMT" or "")
 * nginx variable: none
 * nginx values: none
-* nginx Lua: TODO
-```lua
+* nginx Lua:
+```nginx
 set_by_lua $ssl_client_v_end_compat '
         if ngx.var.https == "on" then
             return require("openssl").x509.read(ngx.var.ssl_client_raw_cert):notafter()
