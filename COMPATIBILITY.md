@@ -26,23 +26,23 @@ Lua with a gateway to OpenSSL, using $ssl_client_raw_cert:
 * SSL_CIPHER_EXPORT: computed from SSL_CIPHER_USEKEYSIZE
 * SSL_CIPHER_USEKEYSIZE: (TODO) can be computed from $ssl_cipher
 * SSL_CIPHER_ALGKEYSIZE: (TODO) can be computed from $ssl_cipher
-* SSL_VERSION_INTERFACE: (TODO) can be computed with Lua-OpenSSL gateway
-* SSL_VERSION_LIBRARY: (TODO) can be computed with Lua-OpenSSL gateway
-* SSL_CLIENT_M_VERSION: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
+* SSL_VERSION_LIBRARY: outputs OpenSSL version
+* SSL_CLIENT_M_VERSION: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_S_DN_*x509*: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_I_DN_*x509*: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
-* SSL_CLIENT_V_START: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
-* SSL_CLIENT_V_END: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
+* SSL_CLIENT_V_START: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
+* SSL_CLIENT_V_END: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_V_REMAIN: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_A_SIG: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_A_KEY: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 
 ### Unaccessible variables
 
-These variables cannot be accessed until an update of the SSL nginx module. A access to the currect SSL connection, server certificate, or SSL engine is needed to compute these variables.
+These variables cannot be accessed until an update of the SSL nginx module. An access to the currect SSL connection and server certificate is needed to compute these variables.
 
 * SSL_SECURE_RENEG
 * SSL_COMPRESS_METHOD
+* SSL_VERSION_INTERFACE
 * SSL_CLIENT_CERT_CHAIN_*n*
 * SSL_SERVER_M_VERSION
 * SSL_SERVER_M_SERIAL
@@ -243,7 +243,14 @@ set_by_lua $ssl_client_m_version_compat '
 * Apache values: string, date with format "%s %2d %02d:%02d:%02d %d%s" (3-letter month like "Jan", day of month, hour, minute, second, 4-figure year, " GMT" or "")
 * nginx variable: none
 * nginx values: none
-* nginx Lua: TODO
+* nginx Lua:
+```lua
+set_by_lua $ssl_client_v_start_compat '
+        if ngx.var.https == "on" then
+            return require("openssl").x509.read(ngx.var.ssl_client_raw_cert):notbefore()
+        end
+        return nil';
+```
 
 
 ### SSL_CLIENT_V_END
@@ -252,7 +259,13 @@ set_by_lua $ssl_client_m_version_compat '
 * nginx variable: none
 * nginx values: none
 * nginx Lua: TODO
-
+```lua
+set_by_lua $ssl_client_v_end_compat '
+        if ngx.var.https == "on" then
+            return require("openssl").x509.read(ngx.var.ssl_client_raw_cert):notafter()
+        end
+        return nil';
+```
 
 ### SSL_CLIENT_V_REMAIN
 
