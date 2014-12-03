@@ -10,7 +10,8 @@ Installing
 
 1. Copy the files `*.conf` in your nginx directory `/etc/nginx` (or another non-standard location).
 
-Soft install:
+__Soft install:__
+
 2. Include the file `*_ssl_variables.conf` in your web server config corresponding to your gateway (fastcgi, scgi, uwsgi). For instance:
 ```nginx
 location ~ \.php {
@@ -18,10 +19,12 @@ location ~ \.php {
     include fastcgi_ssl_variables.conf;
 }
 ```
+
 3. Depending of your nginx version, uncomment lines where a nginx version is indicated. You can also comment some variables you don’t need.
 4. Reload nginx. It’s ready!
 
-Complete install:
+__Complete install:__
+
 2. Be sure you have installed the [nginx Lua package](http://wiki.nginx.org/HttpLuaModule) (available in the Debian/Ubuntu package nginx-extras).
 3. Install the [Lua-OpenSSL interface written by zhaozg](https://github.com/zhaozg/lua-openssl) and be sure it works in the Lua command line.
 4. Include the file `*_ssl_variables_lua.conf` in your web server config corresponding to your gateway (fastcgi, scgi, uwsgi). For instance:
@@ -31,6 +34,7 @@ location ~ \.php {
     include fastcgi_ssl_variables_lua.conf;
 }
 ```
+
 5. Depending of your nginx version, uncomment lines where a nginx version is indicated. You can also comment some variables you don’t need.
 6. Reload nginx. It’s ready!
 
