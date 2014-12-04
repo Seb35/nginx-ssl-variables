@@ -249,7 +249,7 @@ set_by_lua $ssl_client_m_version_compat '
 * Apache values: string
 * nginx variable: none
 * nginx values: none
-* nginx Lua: (here for the field "C", implemented also for "C", "ST", "L", "O", "OU", "CN", "emailAddress", not possible to dynamically define the variables)
+* nginx Lua: (here for the field "C", implemented also for "C", "ST", "L", "O", "OU", "CN", "title", "initials", "GN", "SN", "description", "UID", "emailAddress", not possible to dynamically define the variables)
 ```nginx
 set_by_lua $ssl_client_s_dn_c_compat '
         if ngx.var.https == "on" then
@@ -272,7 +272,7 @@ set_by_lua $ssl_client_s_dn_c_compat '
 * Apache values: string
 * nginx variable: none
 * nginx values: none
-* nginx Lua: (here for the field "C", implemented also for "C", "ST", "L", "O", "OU", "CN", "emailAddress", not possible to dynamically define the variables)
+* nginx Lua: (here for the field "C", implemented also for "C", "ST", "L", "O", "OU", "CN", "title", "initials", "GN", "SN", "description", "UID", "emailAddress", not possible to dynamically define the variables)
 ```nginx
 set_by_lua $ssl_client_i_dn_c_compat '
         if ngx.var.https == "on" then
@@ -482,4 +482,8 @@ set_by_lua $ssl_client_a_key_compat '
 * [Apache mod_ssl variables (source code)](https://svn.apache.org/viewvc/httpd/httpd/trunk/modules/ssl/ssl_engine_vars.c?view=markup)
 * [nginx ssl module (documentation)](http://nginx.org/en/docs/http/ngx_http_ssl_module.html#variables)
 * [nginx ssl module (source code)](http://trac.nginx.org/nginx/browser/nginx/src/http/modules/ngx_http_ssl_module.c)
+* [nginx Lua module (documentation)](http://wiki.nginx.org/HttpLuaModule)
+* [Names of fields (e.g. CN) in certificates (source code)](https://github.com/openssl/openssl/blob/master/crypto/objects/obj_mac.h)
+* [Lua-OpenSSL interface (source code)](https://github.com/zhaozg/lua-openssl)
+* [Lua-OpenSSL interface (documentation)](http://zhaozg.github.io/lua-openssl/)
 
