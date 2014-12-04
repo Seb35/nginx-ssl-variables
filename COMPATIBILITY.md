@@ -21,20 +21,20 @@ Compatibility of SSL environment variables between Apache and nginx
 Pure Lua:
 * SSL_SESSION_ID: uppercased $ssl_session_id
 * SSL_SESSION_RESUMED: small Lua if/else from $ssl_session_reused (introduced in nginx 1.5.11)
+* SSL_CIPHER_EXPORT: computed from SSL_CIPHER_USEKEYSIZE
+* SSL_CIPHER_USEKEYSIZE: computed from $ssl_cipher
+* SSL_CIPHER_ALGKEYSIZE: computed from $ssl_cipher
 
 Lua with a gateway to OpenSSL, using $ssl_client_raw_cert:
-* SSL_CIPHER_EXPORT: computed from SSL_CIPHER_USEKEYSIZE
-* SSL_CIPHER_USEKEYSIZE: (TODO) can be computed from $ssl_cipher
-* SSL_CIPHER_ALGKEYSIZE: (TODO) can be computed from $ssl_cipher
 * SSL_VERSION_LIBRARY: outputs OpenSSL version
 * SSL_CLIENT_M_VERSION: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
-* SSL_CLIENT_S_DN_*x509*: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
-* SSL_CLIENT_I_DN_*x509*: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
+* SSL_CLIENT_S_DN_*x509*: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
+* SSL_CLIENT_I_DN_*x509*: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_V_START: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_V_END: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_V_REMAIN: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_A_SIG: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
-* SSL_CLIENT_A_KEY: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
+* SSL_CLIENT_A_KEY: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 
 ### Unaccessible variables
 
@@ -127,8 +127,8 @@ set_by_lua $ssl_session_resumed_compat '
 * nginx Lua:
 ```nginx
 set_by_lua $ssl_cipher_export_compat '
-        if ngx.var.https == "on" then
-            if ngx.var.ssl_cipher_usekeysize < 56 then
+        if ngx.var.https == "on" and type(tonumber(ngx.var.ssl_cipher_usekeysize_compat)) == "number" then
+            if tonumber(ngx.var.ssl_cipher_usekeysize_compat) < 56 then
                 return "true"
             else
                 return "false"
@@ -143,7 +143,11 @@ set_by_lua $ssl_cipher_export_compat '
 * Apache values: int
 * nginx variable: none
 * nginx values: none
-* nginx Lua: TODO from SSL_CIPHER
+* nginx Lua: (a bit hacky, would be better to use OpenSSL)
+```nginx
+set_by_lua $ssl_cipher_usekeysize_compat '
+        return ngx.var.ssl_cipher_algkeysize_compat';
+```
 
 
 ### SSL_CIPHER_ALGKEYSIZE
@@ -151,7 +155,28 @@ set_by_lua $ssl_cipher_export_compat '
 * Apache values: int
 * nginx variable: none
 * nginx values: none
-* nginx Lua: TODO from SSL_CIPHER
+* nginx Lua: (a bit hacky, would be better to use OpenSSL)
+```nginx
+set_by_lua $ssl_cipher_algkeysize_compat '
+        if ngx.var.https == "on" then
+            if string.match(ngx.var.ssl_cipher,"AES(%d+)") then
+                return string.match(ngx.var.ssl_cipher,"AES(%d+)")
+            elseif string.match(ngx.var.ssl_cipher,"AES-(%d+)") then
+                return string.match(ngx.var.ssl_cipher,"CAMELLIA-(%d+)")
+            elseif string.match(ngx.var.ssl_cipher,"CAMELLIA(%d+)") then
+                return string.match(ngx.var.ssl_cipher,"AES(%d+)")
+            elseif string.match(ngx.var.ssl_cipher,"EXP") then
+                return 40
+            elseif string.match(ngx.var.ssl_cipher,"RC4") then
+                return 128
+            elseif string.match(ngx.var.ssl_cipher,"DES-CBC3") or string.match(ngx.var.ssl_cipher,"3DES") then
+                return 168
+            elseif string.match(ngx.var.ssl_cipher,"DES") then
+                return 56
+            end
+        end
+        return nil';
+```
 
 
 ### SSL_COMPRESS_METHOD
@@ -217,10 +242,20 @@ set_by_lua $ssl_client_m_version_compat '
 
 ### SSL_CLIENT_S_DN_*x509*
 
+(for *x509* equal to all fields in the subject DN)
+
 * Apache values: string
 * nginx variable: none
 * nginx values: none
-* nginx Lua: TODO
+* nginx Lua: (here for the field "C", implemented also for "C", "ST", "L", "O", "OU", "CN", "emailAddress", not possible to dynamically define the variables)
+```nginx
+set_by_lua $ssl_client_s_dn_c_compat '
+        if ngx.var.https == "on" then
+            -- return require("openssl").x509.read(ngx.var.ssl_client_raw_cert):subject():get_text("C") -- segfault in current lua-openssl
+            return string.match(require("openssl").x509.read(ngx.var.ssl_client_raw_cert):subject():oneline(),"/C=([^/]+)")
+        end
+        return nil';
+```
 
 
 ### SSL_CLIENT_I_DN
@@ -235,7 +270,15 @@ set_by_lua $ssl_client_m_version_compat '
 * Apache values: string
 * nginx variable: none
 * nginx values: none
-* nginx Lua: TODO
+* nginx Lua: (here for the field "C", implemented also for "C", "ST", "L", "O", "OU", "CN", "emailAddress", not possible to dynamically define the variables)
+```nginx
+set_by_lua $ssl_client_i_dn_c_compat '
+        if ngx.var.https == "on" then
+            -- return require("openssl").x509.read(ngx.var.ssl_client_raw_cert):issuer():get_text("C") -- segfault in current lua-openssl
+            return string.match(require("openssl").x509.read(ngx.var.ssl_client_raw_cert):issuer():oneline(),"/C=([^/]+)")
+        end
+        return nil';
+```
 
 
 ### SSL_CLIENT_V_START
@@ -288,7 +331,14 @@ set_by_lua $ssl_client_v_end_compat '
 * Apache values: string
 * nginx variable: none
 * nginx values: none
-* nginx Lua: TODO
+* nginx Lua: (should be tested on certificates with other types than RSA: DSA, ECDSA)
+```nginx
+set_by_lua $ssl_client_a_key_compat '
+        if ngx.var.https == "on" then
+            return require("openssl").x509.read(ngx.var.ssl_client_raw_cert):pubkey():parse()["type"] .. "Encryption"
+        end
+        return nil';
+```
 
 
 ### SSL_CLIENT_CERT
