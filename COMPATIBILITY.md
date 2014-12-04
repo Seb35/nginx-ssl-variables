@@ -162,9 +162,9 @@ set_by_lua $ssl_cipher_algkeysize_compat '
             if string.match(ngx.var.ssl_cipher,"AES(%d+)") then
                 return string.match(ngx.var.ssl_cipher,"AES(%d+)")
             elseif string.match(ngx.var.ssl_cipher,"AES-(%d+)") then
-                return string.match(ngx.var.ssl_cipher,"CAMELLIA-(%d+)")
+                return string.match(ngx.var.ssl_cipher,"AES-(%d+)")
             elseif string.match(ngx.var.ssl_cipher,"CAMELLIA(%d+)") then
-                return string.match(ngx.var.ssl_cipher,"AES(%d+)")
+                return string.match(ngx.var.ssl_cipher,"CAMELLIA(%d+)")
             elseif string.match(ngx.var.ssl_cipher,"EXP") then
                 return 40
             elseif string.match(ngx.var.ssl_cipher,"RC4") then
@@ -173,6 +173,8 @@ set_by_lua $ssl_cipher_algkeysize_compat '
                 return 168
             elseif string.match(ngx.var.ssl_cipher,"DES") then
                 return 56
+            elseif string.match(ngx.var.ssl_cipher,"NULL") then
+                return 0
             end
         end
         return nil';
@@ -205,7 +207,7 @@ set_by_lua $ssl_cipher_algkeysize_compat '
 set_by_lua $ssl_version_library_compat '
         if ngx.var.https == "on" then
             lua_openssl_version, lua_version, openssl_version = require("openssl").version()
-            return openssl_version
+            return "OpenSSL/" .. string.sub(openssl_version,9,string.find(openssl_version,"%s",9))
         end
         return nil';
 ```
