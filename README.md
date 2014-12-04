@@ -1,7 +1,7 @@
 nginx SSL variables
 ===================
 
-This creates backward-compatible SSL variables in nginx, compared to Apache mod_ssl module. A few variables are given by nginx, and some others have to be computed through nginx-Lua with a Lua-OpenSSL interface.
+This creates backward-compatible SSL variables in nginx, compared to Apache mod_ssl module; it is particularly interesting for access to SSL client certificate. A few variables are given by nginx, and some others have to be computed through nginx-Lua with a Lua-OpenSSL interface.
 
 All available SSL variables are given in the [COMPATIBILITY.md](COMPATIBILITY.md) file with its specifications and current implementation status.
 
