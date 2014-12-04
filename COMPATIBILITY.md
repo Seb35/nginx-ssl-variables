@@ -476,3 +476,10 @@ set_by_lua $ssl_client_a_key_compat '
 * nginx variable: $ssl_server_name introduced in nginx 1.7.0
 * nginx values: same as Apache
 
+## Reference links
+
+* [Apache mod_ssl variables (documentation)](https://httpd.apache.org/docs/2.4/en/mod/mod_ssl.html#envvars)
+* [Apache mod_ssl variables (source code)](https://svn.apache.org/viewvc/httpd/httpd/trunk/modules/ssl/ssl_engine_vars.c?view=markup)
+* [nginx ssl module (documentation)](http://nginx.org/en/docs/http/ngx_http_ssl_module.html#variables)
+* [nginx ssl module (source code)](http://trac.nginx.org/nginx/browser/nginx/src/http/modules/ngx_http_ssl_module.c)
+
