@@ -32,7 +32,7 @@ Lua with a gateway to OpenSSL, using $ssl_client_raw_cert:
 * SSL_CLIENT_I_DN_*x509*: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_V_START: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_V_END: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
-* SSL_CLIENT_V_REMAIN: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
+* SSL_CLIENT_V_REMAIN: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_A_SIG: (TODO) can be computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 * SSL_CLIENT_A_KEY: computed from $ssl_client_raw_cert with Lua-OpenSSL gateway
 
@@ -317,7 +317,18 @@ set_by_lua $ssl_client_v_end_compat '
 * Apache values: int
 * nginx variable: none
 * nginx values: none
-* nginx Lua: TODO
+* nginx Lua: (should be verified in edge cases: should the ceil function be used or the floor function?)
+```nginx
+set_by_lua $ssl_client_v_remain_compat '
+        if ngx.var.https == "on" then
+            months = {["Jan"]=1,["Feb"]=2,["Mar"]=3,["Apr"]=4,["May"]=5,["Jun"]=6,["Jul"]=7,["Aug"]=8,["Sep"]=9,["Oct"]=10,["Nov"]=11,["Dec"]=12}
+            month, day, hour, min, sec, year = string.match(require("openssl").x509.read(ngx.var.ssl_client_raw_cert):notafter(), "(%a+) (%d+) (%d+):(%d+):(%d+) (%d+) GMT")
+            future = os.time({year=year,month=months[month],day=day,hour=hour,min=min,sec=sec})
+            now = os.time()
+            return math.max(math.ceil((future-now)/86400),0)
+        end
+        return nil';
+```
 
 
 ### SSL_CLIENT_A_SIG
